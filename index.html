@@ -45,11 +45,11 @@
             <span id="healText"> Heal Count: {{healCount}}</span>
         </div>
     </section>
-    <section class="row log">
+    <section class="row log" v-if="turns.length > 0">
         <div class="small-12 columns">
             <ul>
-                <li>
-
+                <li v-for="turn in turns" :class="{'player-turn': turn.isPlayer && turn.text.length > 0, 'monster-turn': !turn.isPlayer && turn.text.length > 0}">
+                    {{ turn.text }}
                 </li>
             </ul>
         </div>

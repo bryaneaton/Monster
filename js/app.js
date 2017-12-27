@@ -4,7 +4,8 @@ new Vue({
         playerHealth: 100,
         monsterHealth: 100,
         gameIsRunning: false,
-        healCount: 0
+        healCount: 0,
+        turns: []
     },
     methods: {
         startGame: function () {
@@ -12,45 +13,68 @@ new Vue({
             this.playerHealth = 100;
             this.monsterHealth = 100;
             this.healCount = 0;
+            this.turns = [];
         },
         attack: function () {
-            this.monsterHealth -= this.calculateDamage(3, 10);
+            var damage = this.calculateDamage(3, 10);
+            this.monsterHealth -= damage;
+            this.turns.unshift({
+                isPlayer: true,
+                text: 'Player hits Monster for ' + damage
+            });
 
             if (this.checkWin()) {
                 return;
             }
 
-            this.playerHealth -= this.calculateDamage(5, 12)
-
-            this.checkWin();
+            this.monsterAttacks();
 
         },
         specialAttack: function () {
-            this.monsterHealth -= this.calculateDamage(10, 34);
+            var damage = this.calculateDamage(10, 34);
+            this.monsterHealth -= damage ;
+            this.turns.unshift({
+                isPlayer: true,
+                text: 'Player hits Monster Hard for ' + damage
+            });
 
             if (this.checkWin()) {
                 return;
             }
+          
 
-            this.playerHealth -= this.calculateDamage(15, 34)
-
-            this.checkWin();
+            this.monsterAttacks();
 
         },
         heal: function () {
 
             //you only get three heals, don't blow it
             if (this.healCount < 3) {
-                this.playerHealth += this.calculateHeal();
+                var heal = this.calculateHeal();
+                this.playerHealth += heal;
                 this.healCount += 1;
             } else {
                 alert('You are out of heals!');
             }
+            this.turns.unshift({
+                isPlayer: true,
+                text: 'Player heals for ' + heal
+            });heal
+            this.monsterAttacks();
             return true;
 
         },
         endGame: function () {
             this.gameIsRunning = false;
+        },
+        monsterAttacks: function() {
+            var damage = this.calculateDamage(5, 12)
+            this.playerHealth -= damage;
+            this.turns.push({
+                isPlayer: false,
+                text: 'Monster hits Player for ' + damage
+            });
+            this.checkWin();
         },
         calculateDamage: function (min, max) {
             return Math.max(Math.floor(Math.random() * max) + 1, min);
